@@ -50,7 +50,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -78,7 +78,7 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    var selectedTab by remember { mutableIntStateOf(initialTab) }
+    var selectedTab by rememberSaveable { mutableIntStateOf(initialTab) }
 
     Scaffold(
         topBar = {
@@ -148,10 +148,10 @@ fun HomeScreen(
                 )
                 NavigationBarItem(
                     selected = selectedTab == 2,
-                    onClick = { selectedTab = 2; onNavigateToLearning() },
+                    onClick = { selectedTab = 0; onNavigateToLearning() },
                     icon = {
                         Icon(
-                            if (selectedTab == 2) Icons.Filled.School else Icons.Outlined.School,
+                             Icons.Outlined.School,
                             contentDescription = "Learn"
                         )
                     },
