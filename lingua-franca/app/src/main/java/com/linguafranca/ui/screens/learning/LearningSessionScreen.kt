@@ -182,10 +182,12 @@ fun LearningSessionScreen(
                              slideOutHorizontally { width -> -width })
                         },
                         label = "wordCard"
-                    ) { _ ->
+                    ) { targetIndex ->
+                        val wordAtThisState = uiState.words[targetIndex]
+
                         FlashCard(
-                            word = currentWord.word.original,
-                            translation = currentWord.word.translation,
+                            word = wordAtThisState.word.original,
+                            translation = wordAtThisState.word.translation,
                             isRevealed = uiState.isAnswerRevealed,
                             onReveal = { viewModel.revealAnswer() },
                             modifier = Modifier.weight(1f)

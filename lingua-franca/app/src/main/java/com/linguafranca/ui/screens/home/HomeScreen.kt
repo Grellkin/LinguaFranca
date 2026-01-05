@@ -1,4 +1,4 @@
-§package com.linguafranca.ui.screens.home
+package com.linguafranca.ui.screens.home
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
