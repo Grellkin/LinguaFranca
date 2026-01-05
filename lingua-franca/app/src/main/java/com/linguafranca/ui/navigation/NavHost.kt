@@ -91,6 +91,7 @@ fun LinguaFrancaNavHost(
                 onNavigateToProfile = { navController.navigate(Screen.Profile.route) },
                 onNavigateToSettings = { navController.navigate(Screen.Settings.route) },
                 onNavigateToSearch = { navController.navigate(Screen.Search.route) },
+                onNavigateToCreateDictionary = { navController.navigate(Screen.CreateDictionary.route) },
                 onNavigateToDictionary = { id -> 
                     navController.navigate(Screen.DictionaryDetail.createRoute(id)) 
                 }
@@ -106,6 +107,7 @@ fun LinguaFrancaNavHost(
                 onNavigateToProfile = { navController.navigate(Screen.Profile.route) },
                 onNavigateToSettings = { navController.navigate(Screen.Settings.route) },
                 onNavigateToSearch = { navController.navigate(Screen.Search.route) },
+                onNavigateToCreateDictionary = { navController.navigate(Screen.CreateDictionary.route) },
                 onNavigateToDictionary = { id -> 
                     navController.navigate(Screen.DictionaryDetail.createRoute(id)) 
                 }

@@ -34,6 +34,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -72,6 +73,7 @@ fun HomeScreen(
     onNavigateToProfile: () -> Unit,
     onNavigateToSettings: () -> Unit,
     onNavigateToSearch: () -> Unit,
+    onNavigateToCreateDictionary: () -> Unit,
     onNavigateToDictionary: (String) -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
@@ -109,6 +111,16 @@ fun HomeScreen(
                     containerColor = MaterialTheme.colorScheme.background
                 )
             )
+        },
+        floatingActionButton = {
+            if (selectedTab == 1) {
+                FloatingActionButton(
+                    onClick = onNavigateToCreateDictionary,
+                    containerColor = MaterialTheme.colorScheme.primary
+                ) {
+                    Icon(Icons.Default.Add, contentDescription = "Add dictionary")
+                }
+            }
         },
         bottomBar = {
             NavigationBar {
