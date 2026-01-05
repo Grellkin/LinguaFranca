@@ -86,13 +86,12 @@ fun LinguaFrancaNavHost(
         // Main screens
         composable(Screen.Home.route) {
             HomeScreen(
-                onNavigateToDictionaries = { navController.navigate(Screen.Dictionaries.route) },
                 onNavigateToLearning = { navController.navigate(Screen.Learning.route) },
                 onNavigateToProfile = { navController.navigate(Screen.Profile.route) },
                 onNavigateToSettings = { navController.navigate(Screen.Settings.route) },
                 onNavigateToSearch = { navController.navigate(Screen.Search.route) },
                 onNavigateToCreateDictionary = { navController.navigate(Screen.CreateDictionary.route) },
-                onNavigateToDictionary = { id -> 
+                onNavigateToDictionary = { id ->
                     navController.navigate(Screen.DictionaryDetail.createRoute(id)) 
                 }
             )
@@ -102,13 +101,12 @@ fun LinguaFrancaNavHost(
             // Reuses HomeScreen with dictionary tab selected
             HomeScreen(
                 initialTab = 1,
-                onNavigateToDictionaries = { },
                 onNavigateToLearning = { navController.navigate(Screen.Learning.route) },
                 onNavigateToProfile = { navController.navigate(Screen.Profile.route) },
                 onNavigateToSettings = { navController.navigate(Screen.Settings.route) },
                 onNavigateToSearch = { navController.navigate(Screen.Search.route) },
                 onNavigateToCreateDictionary = { navController.navigate(Screen.CreateDictionary.route) },
-                onNavigateToDictionary = { id -> 
+                onNavigateToDictionary = { id ->
                     navController.navigate(Screen.DictionaryDetail.createRoute(id)) 
                 }
             )

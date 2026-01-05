@@ -60,6 +60,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import com.linguafranca.domain.model.DictionaryType
 import com.linguafranca.domain.model.DictionaryWithProgress
 import com.linguafranca.ui.theme.LinguaFrancaColors
@@ -68,7 +69,6 @@ import com.linguafranca.ui.theme.LinguaFrancaColors
 @Composable
 fun HomeScreen(
     initialTab: Int = 0,
-    onNavigateToDictionaries: () -> Unit,
     onNavigateToLearning: () -> Unit,
     onNavigateToProfile: () -> Unit,
     onNavigateToSettings: () -> Unit,
@@ -174,6 +174,7 @@ fun HomeScreen(
                 0 -> HomeTab(
                     uiState = uiState,
                     onNavigateToDictionary = onNavigateToDictionary,
+                    onNavigateToDictionaries = { selectedTab = 1 },
                     onNavigateToLearning = onNavigateToLearning,
                     modifier = Modifier.padding(paddingValues)
                 )
@@ -191,6 +192,7 @@ fun HomeScreen(
 private fun HomeTab(
     uiState: HomeUiState,
     onNavigateToDictionary: (String) -> Unit,
+    onNavigateToDictionaries: () -> Unit,
     onNavigateToLearning: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -235,10 +237,8 @@ private fun HomeTab(
                         title = "Add Words",
                         subtitle = "Expand vocabulary",
                         icon = Icons.Default.Add,
-                        onClick = { 
-                            uiState.dictionaries.firstOrNull()?.dictionary?.id?.let { 
-                                onNavigateToDictionary(it) 
-                            }
+                        onClick = {
+                            onNavigateToDictionaries()
                         }
                     )
                 }
