@@ -9,6 +9,7 @@ import com.linguafranca.data.local.dao.UserDao
 import com.linguafranca.data.local.dao.UserSettingsDao
 import com.linguafranca.data.local.dao.WordDao
 import com.linguafranca.data.local.database.LinguaFrancaDatabase
+import com.linguafranca.data.local.database.MIGRATION_1_2
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,7 +28,9 @@ object DatabaseModule {
             context,
             LinguaFrancaDatabase::class.java,
             LinguaFrancaDatabase.DATABASE_NAME
-        ).build()
+        )
+            .addMigrations(MIGRATION_1_2)
+            .build()
     }
 
     @Provides

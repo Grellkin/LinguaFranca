@@ -1,5 +1,6 @@
 package com.linguafranca.data.repository
 
+import com.linguafranca.data.local.dao.DictionaryDao
 import com.linguafranca.data.local.dao.LearningProgressDao
 import com.linguafranca.data.local.dao.TagDao
 import com.linguafranca.data.local.dao.WordDao
@@ -20,6 +21,7 @@ import javax.inject.Singleton
 class WordRepositoryImpl @Inject constructor(
     private val wordDao: WordDao,
     private val tagDao: TagDao,
+    private val dictionaryDao: DictionaryDao,
     private val learningProgressDao: LearningProgressDao
 ) : WordRepository {
 
@@ -71,6 +73,7 @@ class WordRepositoryImpl @Inject constructor(
 
     override suspend fun createWord(word: Word) {
         wordDao.insertWord(WordEntity.fromDomain(word))
+        dictionaryDao.touchDictionary(word.dictionaryId)
     }
 
     override suspend fun updateWord(word: Word) {
@@ -78,7 +81,11 @@ class WordRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteWord(wordId: String) {
-        wordDao.deleteWordById(wordId)
+        val word = wordDao.getWordById(wordId)
+        word?.let {
+            wordDao.deleteWordById(wordId)
+            dictionaryDao.touchDictionary(it.dictionaryId)
+        }
     }
 
     override suspend fun getWordWithTags(wordId: String): WordWithTags? {

@@ -29,7 +29,8 @@ data class DictionaryEntity(
     val description: String,
     val type: String, // CUSTOM, FRANCO, COMMUNITY
     val isActive: Boolean,
-    val createdAt: Long
+    val createdAt: Long,
+    val updatedAt: Long = createdAt
 ) {
     fun toDomain() = Dictionary(
         id = id,
@@ -38,7 +39,8 @@ data class DictionaryEntity(
         description = description,
         type = DictionaryType.valueOf(type),
         isActive = isActive,
-        createdAt = LocalDateTime.ofEpochSecond(createdAt / 1000, 0, ZoneOffset.UTC)
+        createdAt = LocalDateTime.ofEpochSecond(createdAt / 1000, 0, ZoneOffset.UTC),
+        updatedAt = LocalDateTime.ofEpochSecond(updatedAt / 1000, 0, ZoneOffset.UTC)
     )
 
     companion object {
@@ -49,7 +51,8 @@ data class DictionaryEntity(
             description = dictionary.description,
             type = dictionary.type.name,
             isActive = dictionary.isActive,
-            createdAt = dictionary.createdAt.toEpochSecond(ZoneOffset.UTC) * 1000
+            createdAt = dictionary.createdAt.toEpochSecond(ZoneOffset.UTC) * 1000,
+            updatedAt = dictionary.updatedAt.toEpochSecond(ZoneOffset.UTC) * 1000
         )
     }
 }

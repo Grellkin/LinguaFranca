@@ -60,7 +60,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import com.linguafranca.domain.model.DictionaryType
 import com.linguafranca.domain.model.DictionaryWithProgress
 import com.linguafranca.ui.theme.LinguaFrancaColors

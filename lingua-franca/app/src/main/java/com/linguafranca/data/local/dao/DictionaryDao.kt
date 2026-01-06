@@ -49,5 +49,8 @@ interface DictionaryDao {
 
     @Query("UPDATE dictionaries SET isActive = :isActive WHERE id = :dictionaryId")
     suspend fun setDictionaryActive(dictionaryId: String, isActive: Boolean)
+
+    @Query("UPDATE dictionaries SET updatedAt = :timestamp WHERE id = :dictionaryId")
+    suspend fun touchDictionary(dictionaryId: String, timestamp: Long = System.currentTimeMillis())
 }
 

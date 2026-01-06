@@ -9,7 +9,8 @@ data class Dictionary(
     val description: String = "",
     val type: DictionaryType,
     val isActive: Boolean = true,
-    val createdAt: LocalDateTime = LocalDateTime.now()
+    val createdAt: LocalDateTime = LocalDateTime.now(),
+    val updatedAt: LocalDateTime = LocalDateTime.now()
 )
 
 enum class DictionaryType {
