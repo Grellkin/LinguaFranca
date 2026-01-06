@@ -228,4 +228,3 @@ fun LinguaFrancaNavHost(
         }
     }
 }
-
