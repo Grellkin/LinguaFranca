@@ -211,13 +211,33 @@ fun LinguaFrancaNavHost(
             val wordId = backStackEntry.arguments?.getString("wordId") ?: ""
             WordDetailScreen(
                 wordId = wordId,
+                onEditWord = { dictionaryId, word ->
+                    navController.navigate(Screen.EditWord.createRoute(dictionaryId, word))
+                },
                 onNavigateBack = { navController.popBackStack() }
             )
         }
         
         composable(
             route = Screen.CreateWord.route,
-            arguments = listOf(navArgument("dictionaryId") { type = NavType.StringType })
+            arguments = listOf(
+                navArgument("dictionaryId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val dictionaryId = backStackEntry.arguments?.getString("dictionaryId") ?: ""
+            CreateWordScreen(
+                dictionaryId = dictionaryId,
+                onNavigateBack = { navController.popBackStack() },
+                onWordCreated = { navController.popBackStack() }
+            )
+        }
+
+        composable(
+            route = Screen.EditWord.route,
+            arguments = listOf(
+                navArgument("dictionaryId") { type = NavType.StringType },
+                navArgument("wordId") { type = NavType.StringType }
+            )
         ) { backStackEntry ->
             val dictionaryId = backStackEntry.arguments?.getString("dictionaryId") ?: ""
             CreateWordScreen(

@@ -25,7 +25,8 @@ data class CreateWordUiState(
     val notes: String = "",
     val isTranslating: Boolean = false,
     val isSaving: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val id: String? = null
 )
 
 @HiltViewModel
@@ -37,8 +38,15 @@ class CreateWordViewModel @Inject constructor(
 
     private val dictionaryId: String = checkNotNull(savedStateHandle["dictionaryId"])
 
+    private val wordId: String? = savedStateHandle["wordId"]
+
     private val _uiState = MutableStateFlow(CreateWordUiState())
     val uiState: StateFlow<CreateWordUiState> = _uiState.asStateFlow()
+
+
+    init {
+        loadWord()
+    }
 
     fun updateOriginal(text: String) {
         _uiState.value = _uiState.value.copy(original = text, error = null)
@@ -159,7 +167,7 @@ class CreateWordViewModel @Inject constructor(
                 }
 
                 val word = Word(
-                    id = UUID.randomUUID().toString(),
+                    id = _uiState.value.id ?: UUID.randomUUID().toString(),
                     dictionaryId = dictionaryId,
                     original = original,
                     mainTranslation = mainTranslation,
@@ -175,6 +183,23 @@ class CreateWordViewModel @Inject constructor(
                 _uiState.value = _uiState.value.copy(
                     isSaving = false,
                     error = "Failed to save word: ${e.message}"
+                )
+            }
+        }
+    }
+
+    fun loadWord() {
+        if (wordId == null) return
+        viewModelScope.launch {
+            val word = wordRepository.getWordById(wordId)
+            if (word != null) {
+                _uiState.value = _uiState.value.copy(
+                    original = word.original,
+                    mainTranslation = word.mainTranslation,
+                    additionalTranslations = word.additionalTranslations,
+                    examples = word.examples,
+                    notes = word.notes,
+                    id = word.id
                 )
             }
         }

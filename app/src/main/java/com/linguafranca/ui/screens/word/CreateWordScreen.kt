@@ -54,7 +54,7 @@ fun CreateWordScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Add Word") },
+                title = { if(uiState.id != null) Text("Edit word") else Text("Add Word") },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
@@ -71,18 +71,20 @@ fun CreateWordScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             Text(
-                text = "New Word",
+                text = if(uiState.id != null) "What do you want to change?" else "New Word",
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold
             )
             
             Spacer(modifier = Modifier.height(8.dp))
-            
-            Text(
-                text = "Add a new word to your dictionary",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+
+            if(uiState.id == null) {
+                Text(
+                    text =  "Add a new word to your dictionary",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
 
             Spacer(modifier = Modifier.height(24.dp))
 

@@ -28,8 +28,8 @@ sealed class Screen(val route: String) {
     data object CreateWord : Screen("dictionary/{dictionaryId}/word/create") {
         fun createRoute(dictionaryId: String) = "dictionary/$dictionaryId/word/create"
     }
-    data object EditWord : Screen("word/{wordId}/edit") {
-        fun createRoute(wordId: String) = "word/$wordId/edit"
+    data object EditWord : Screen("dictionary/{dictionaryId}/word/{wordId}/edit") {
+        fun createRoute(dictionaryId: String, wordId: String) = "dictionary/$dictionaryId/word/${wordId}/edit"
     }
     
     // Learning screens
