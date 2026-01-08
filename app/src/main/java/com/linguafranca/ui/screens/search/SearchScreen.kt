@@ -40,7 +40,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.linguafranca.domain.model.Dictionary
@@ -146,6 +150,7 @@ fun SearchScreen(
                     items(uiState.words) { word ->
                         WordSearchResult(
                             word = word,
+                            query = uiState.query,
                             onClick = { onNavigateToWord(word.id) }
                         )
                     }
@@ -168,6 +173,7 @@ fun SearchScreen(
                     items(uiState.dictionaries) { dictionary ->
                         DictionarySearchResult(
                             dictionary = dictionary,
+                            query = uiState.query,
                             onClick = { onNavigateToDictionary(dictionary.id) }
                         )
                     }
@@ -201,8 +207,71 @@ fun SearchScreen(
 }
 
 @Composable
+private fun HighlightedText(
+    text: String,
+    query: String,
+    modifier: Modifier = Modifier,
+    style: androidx.compose.ui.text.TextStyle = MaterialTheme.typography.bodyMedium,
+    normalColor: Color = MaterialTheme.colorScheme.onSurface,
+    highlightColor: Color = MaterialTheme.colorScheme.primary,
+    highlightBackground: Color = MaterialTheme.colorScheme.primaryContainer
+) {
+    val annotatedString = buildAnnotatedString {
+        if (query.isBlank()) {
+            withStyle(SpanStyle(color = normalColor)) {
+                append(text)
+            }
+            return@buildAnnotatedString
+        }
+
+        var currentIndex = 0
+        val lowerText = text.lowercase()
+        val lowerQuery = query.lowercase()
+
+        while (currentIndex < text.length) {
+            val matchIndex = lowerText.indexOf(lowerQuery, currentIndex)
+
+            if (matchIndex == -1) {
+                // No more matches, append the rest normally
+                withStyle(SpanStyle(color = normalColor)) {
+                    append(text.substring(currentIndex))
+                }
+                break
+            }
+
+            // Append text before match
+            if (matchIndex > currentIndex) {
+                withStyle(SpanStyle(color = normalColor)) {
+                    append(text.substring(currentIndex, matchIndex))
+                }
+            }
+
+            // Append highlighted match (preserving original case)
+            withStyle(
+                SpanStyle(
+                    color = highlightColor,
+                    background = highlightBackground,
+                    fontWeight = FontWeight.Bold
+                )
+            ) {
+                append(text.substring(matchIndex, matchIndex + query.length))
+            }
+
+            currentIndex = matchIndex + query.length
+        }
+    }
+
+    Text(
+        text = annotatedString,
+        style = style,
+        modifier = modifier
+    )
+}
+
+@Composable
 private fun WordSearchResult(
     word: Word,
+    query: String,
     onClick: () -> Unit
 ) {
     Card(
@@ -231,16 +300,26 @@ private fun WordSearchResult(
                     .weight(1f)
                     .padding(start = 16.dp)
             ) {
-                Text(
+                HighlightedText(
                     text = word.original,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.SemiBold
+                    query = query,
+                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold)
                 )
-                Text(
+                HighlightedText(
                     text = word.mainTranslation,
+                    query = query,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    normalColor = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+                if (word.additionalTranslations.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    HighlightedText(
+                        text = "Also: ${word.additionalTranslations.joinToString(", ")}",
+                        query = query,
+                        style = MaterialTheme.typography.bodyMedium,
+                        normalColor = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+                    )
+                }
             }
         }
     }
@@ -249,6 +328,7 @@ private fun WordSearchResult(
 @Composable
 private fun DictionarySearchResult(
     dictionary: Dictionary,
+    query: String,
     onClick: () -> Unit
 ) {
     Card(
@@ -277,16 +357,17 @@ private fun DictionarySearchResult(
                     .weight(1f)
                     .padding(start = 16.dp)
             ) {
-                Text(
+                HighlightedText(
                     text = dictionary.name,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.SemiBold
+                    query = query,
+                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold)
                 )
                 if (dictionary.description.isNotBlank()) {
-                    Text(
+                    HighlightedText(
                         text = dictionary.description,
+                        query = query,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        normalColor = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
