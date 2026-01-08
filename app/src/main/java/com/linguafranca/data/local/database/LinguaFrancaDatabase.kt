@@ -2,6 +2,7 @@ package com.linguafranca.data.local.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import com.linguafranca.data.local.dao.DictionaryDao
 import com.linguafranca.data.local.dao.LearningProgressDao
 import com.linguafranca.data.local.dao.TagDao
@@ -26,9 +27,10 @@ import com.linguafranca.data.local.entity.WordTagCrossRef
         WordTagCrossRef::class,
         LearningProgressEntity::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = true
 )
+@TypeConverters(Converters::class)
 abstract class LinguaFrancaDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
     abstract fun userSettingsDao(): UserSettingsDao

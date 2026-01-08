@@ -109,10 +109,21 @@ fun WordDetailScreen(
                         Spacer(modifier = Modifier.height(8.dp))
                         
                         Text(
-                            text = uiState.word?.translation ?: "",
+                            text = uiState.word?.mainTranslation ?: "",
                             style = MaterialTheme.typography.titleLarge,
                             color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
                         )
+                        
+                        // Additional translations
+                        val additionalTranslations = uiState.word?.additionalTranslations ?: emptyList()
+                        if (additionalTranslations.isNotEmpty()) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "Also: ${additionalTranslations.joinToString(", ")}",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+                            )
+                        }
                         
                         if (!uiState.word?.notes.isNullOrBlank()) {
                             Spacer(modifier = Modifier.height(12.dp))
@@ -121,6 +132,48 @@ fun WordDetailScreen(
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
                             )
+                        }
+                    }
+                }
+                
+                // Examples section
+                val examples = uiState.word?.examples ?: emptyMap()
+                if (examples.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(24.dp))
+                    
+                    Text(
+                        text = "Examples",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    
+                    Spacer(modifier = Modifier.height(12.dp))
+                    
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surface
+                        ),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            examples.entries.forEachIndexed { index, (phrase, translation) ->
+                                if (index > 0) {
+                                    Spacer(modifier = Modifier.height(12.dp))
+                                }
+                                Text(
+                                    text = "\"$phrase\"",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.Medium
+                                )
+                                if (!translation.isNullOrBlank()) {
+                                    Text(
+                                        text = "→ $translation",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
                         }
                     }
                 }

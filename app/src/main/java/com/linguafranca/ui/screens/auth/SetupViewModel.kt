@@ -121,7 +121,7 @@ class SetupViewModel @Inject constructor(
                     id = UUID.randomUUID().toString(),
                     dictionaryId = animalsDictId,
                     original = original,
-                    translation = translation
+                    mainTranslation = translation
                 )
             )
         }
@@ -158,7 +158,7 @@ class SetupViewModel @Inject constructor(
                     id = UUID.randomUUID().toString(),
                     dictionaryId = foodDictId,
                     original = original,
-                    translation = translation
+                    mainTranslation = translation
                 )
             )
         }
@@ -195,7 +195,7 @@ class SetupViewModel @Inject constructor(
                     id = UUID.randomUUID().toString(),
                     dictionaryId = phrasesDictId,
                     original = original,
-                    translation = translation
+                    mainTranslation = translation
                 )
             )
         }

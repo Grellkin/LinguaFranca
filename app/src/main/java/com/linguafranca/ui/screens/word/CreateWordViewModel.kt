@@ -16,7 +16,12 @@ import javax.inject.Inject
 
 data class CreateWordUiState(
     val original: String = "",
-    val translation: String = "",
+    val mainTranslation: String = "",
+    val additionalTranslations: List<String> = emptyList(),
+    val pendingAdditionalTranslation: String = "",
+    val examples: Map<String, String?> = emptyMap(),
+    val pendingExamplePhrase: String = "",
+    val pendingExampleTranslation: String = "",
     val notes: String = "",
     val isTranslating: Boolean = false,
     val isSaving: Boolean = false,
@@ -39,8 +44,64 @@ class CreateWordViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(original = text, error = null)
     }
 
-    fun updateTranslation(text: String) {
-        _uiState.value = _uiState.value.copy(translation = text, error = null)
+    fun updateMainTranslation(text: String) {
+        _uiState.value = _uiState.value.copy(mainTranslation = text, error = null)
+    }
+
+    fun updateAdditionalTranslations(translations: List<String>) {
+        _uiState.value = _uiState.value.copy(additionalTranslations = translations)
+    }
+
+    fun updatePendingAdditionalTranslation(text: String) {
+        _uiState.value = _uiState.value.copy(pendingAdditionalTranslation = text)
+    }
+
+    fun addAdditionalTranslation(translation: String) {
+        if (translation.isNotBlank()) {
+            val current = _uiState.value.additionalTranslations
+            _uiState.value = _uiState.value.copy(
+                additionalTranslations = current + translation.trim(),
+                pendingAdditionalTranslation = ""
+            )
+        }
+    }
+
+    fun removeAdditionalTranslation(index: Int) {
+        val current = _uiState.value.additionalTranslations.toMutableList()
+        if (index in current.indices) {
+            current.removeAt(index)
+            _uiState.value = _uiState.value.copy(additionalTranslations = current)
+        }
+    }
+
+    fun updateExamples(examples: Map<String, String?>) {
+        _uiState.value = _uiState.value.copy(examples = examples)
+    }
+
+    fun updatePendingExamplePhrase(text: String) {
+        _uiState.value = _uiState.value.copy(pendingExamplePhrase = text)
+    }
+
+    fun updatePendingExampleTranslation(text: String) {
+        _uiState.value = _uiState.value.copy(pendingExampleTranslation = text)
+    }
+
+    fun addExample(phrase: String, translation: String?) {
+        if (phrase.isNotBlank()) {
+            val current = _uiState.value.examples.toMutableMap()
+            current[phrase.trim()] = translation?.trim()?.ifBlank { null }
+            _uiState.value = _uiState.value.copy(
+                examples = current,
+                pendingExamplePhrase = "",
+                pendingExampleTranslation = ""
+            )
+        }
+    }
+
+    fun removeExample(phrase: String) {
+        val current = _uiState.value.examples.toMutableMap()
+        current.remove(phrase)
+        _uiState.value = _uiState.value.copy(examples = current)
     }
 
     fun updateNotes(text: String) {
@@ -57,7 +118,7 @@ class CreateWordViewModel @Inject constructor(
             val result = translateWordUseCase(original)
             
             _uiState.value = _uiState.value.copy(
-                translation = result ?: _uiState.value.translation,
+                mainTranslation = result ?: _uiState.value.mainTranslation,
                 isTranslating = false,
                 error = if (result == null) "Translation failed. Please enter manually." else null
             )
@@ -66,14 +127,14 @@ class CreateWordViewModel @Inject constructor(
 
     fun saveWord(onSaved: () -> Unit) {
         val original = _uiState.value.original.trim()
-        val translation = _uiState.value.translation.trim()
+        val mainTranslation = _uiState.value.mainTranslation.trim()
 
         if (original.isBlank()) {
             _uiState.value = _uiState.value.copy(error = "Please enter a word")
             return
         }
 
-        if (translation.isBlank()) {
+        if (mainTranslation.isBlank()) {
             _uiState.value = _uiState.value.copy(error = "Please enter a translation")
             return
         }
@@ -82,11 +143,28 @@ class CreateWordViewModel @Inject constructor(
             _uiState.value = _uiState.value.copy(isSaving = true, error = null)
 
             try {
+                // Include any pending additional translation that wasn't explicitly added
+                val allAdditionalTranslations = _uiState.value.additionalTranslations.toMutableList()
+                val pendingTranslation = _uiState.value.pendingAdditionalTranslation.trim()
+                if (pendingTranslation.isNotBlank()) {
+                    allAdditionalTranslations.add(pendingTranslation)
+                }
+
+                // Include any pending example that wasn't explicitly added
+                val allExamples = _uiState.value.examples.toMutableMap()
+                val pendingPhrase = _uiState.value.pendingExamplePhrase.trim()
+                if (pendingPhrase.isNotBlank()) {
+                    val pendingExampleTrans = _uiState.value.pendingExampleTranslation.trim().ifBlank { null }
+                    allExamples[pendingPhrase] = pendingExampleTrans
+                }
+
                 val word = Word(
                     id = UUID.randomUUID().toString(),
                     dictionaryId = dictionaryId,
                     original = original,
-                    translation = translation,
+                    mainTranslation = mainTranslation,
+                    additionalTranslations = allAdditionalTranslations.filter { it.isNotBlank() },
+                    examples = allExamples.filterKeys { it.isNotBlank() },
                     notes = _uiState.value.notes.trim()
                 )
                 

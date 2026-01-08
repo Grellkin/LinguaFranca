@@ -28,7 +28,11 @@ interface WordDao {
     @Query("""
         SELECT * FROM words 
         WHERE dictionaryId = :dictionaryId 
-        AND (original LIKE '%' || :query || '%' OR translation LIKE '%' || :query || '%')
+        AND (
+            original LIKE '%' || :query || '%' 
+            OR mainTranslation LIKE '%' || :query || '%'
+            OR additionalTranslations LIKE '%' || :query || '%'
+        )
         ORDER BY createdAt DESC
     """)
     fun searchWordsInDictionary(dictionaryId: String, query: String): Flow<List<WordEntity>>
@@ -37,7 +41,11 @@ interface WordDao {
         SELECT w.* FROM words w
         INNER JOIN dictionaries d ON w.dictionaryId = d.id
         WHERE d.userId = :userId
-        AND (w.original LIKE '%' || :query || '%' OR w.translation LIKE '%' || :query || '%')
+        AND (
+            w.original LIKE '%' || :query || '%' 
+            OR w.mainTranslation LIKE '%' || :query || '%'
+            OR w.additionalTranslations LIKE '%' || :query || '%'
+        )
         ORDER BY w.createdAt DESC
     """)
     fun searchAllWords(userId: String, query: String): Flow<List<WordEntity>>

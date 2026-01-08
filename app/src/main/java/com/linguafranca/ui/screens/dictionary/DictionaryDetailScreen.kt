@@ -1,7 +1,5 @@
 package com.linguafranca.ui.screens.dictionary
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -466,7 +464,7 @@ private fun WordCardContent(
                     fontWeight = FontWeight.SemiBold
                 )
                 Text(
-                    text = word.translation,
+                    text = word.mainTranslation,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

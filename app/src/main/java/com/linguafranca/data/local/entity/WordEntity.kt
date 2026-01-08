@@ -25,7 +25,9 @@ data class WordEntity(
     val id: String,
     val dictionaryId: String,
     val original: String,
-    val translation: String,
+    val mainTranslation: String,
+    val additionalTranslations: List<String>?,
+    val examples: Map<String, String?>?,
     val notes: String,
     val createdAt: Long
 ) {
@@ -33,7 +35,9 @@ data class WordEntity(
         id = id,
         dictionaryId = dictionaryId,
         original = original,
-        translation = translation,
+        mainTranslation = mainTranslation,
+        additionalTranslations = additionalTranslations ?: emptyList(),
+        examples = examples ?: emptyMap(),
         notes = notes,
         createdAt = LocalDateTime.ofEpochSecond(createdAt / 1000, 0, ZoneOffset.UTC)
     )
@@ -43,7 +47,9 @@ data class WordEntity(
             id = word.id,
             dictionaryId = word.dictionaryId,
             original = word.original,
-            translation = word.translation,
+            mainTranslation = word.mainTranslation,
+            additionalTranslations = word.additionalTranslations.ifEmpty { null },
+            examples = word.examples.ifEmpty { null },
             notes = word.notes,
             createdAt = word.createdAt.toEpochSecond(ZoneOffset.UTC) * 1000
         )

@@ -237,7 +237,7 @@ private fun WordSearchResult(
                     fontWeight = FontWeight.SemiBold
                 )
                 Text(
-                    text = word.translation,
+                    text = word.mainTranslation,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

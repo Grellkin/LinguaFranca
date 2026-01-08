@@ -187,7 +187,8 @@ fun LearningSessionScreen(
 
                         FlashCard(
                             word = wordAtThisState.word.original,
-                            translation = wordAtThisState.word.translation,
+                            translation = wordAtThisState.word.mainTranslation,
+                            additionalTranslations = wordAtThisState.word.additionalTranslations,
                             isRevealed = uiState.isAnswerRevealed,
                             onReveal = { viewModel.revealAnswer() },
                             modifier = Modifier.weight(1f)
@@ -252,6 +253,7 @@ fun LearningSessionScreen(
 private fun FlashCard(
     word: String,
     translation: String,
+    additionalTranslations: List<String> = emptyList(),
     isRevealed: Boolean,
     onReveal: () -> Unit,
     modifier: Modifier = Modifier
@@ -299,6 +301,16 @@ private fun FlashCard(
                     color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.9f),
                     textAlign = TextAlign.Center
                 )
+                
+                if (additionalTranslations.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Also: ${additionalTranslations.joinToString(", ")}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.6f),
+                        textAlign = TextAlign.Center
+                    )
+                }
             }
         }
     }

@@ -73,7 +73,8 @@ class DictionaryDetailViewModel @Inject constructor(
     private fun filterWords(words: List<Word>, query: String): List<Word> {
         return words.filter { word ->
             word.original.contains(query, ignoreCase = true) ||
-            word.translation.contains(query, ignoreCase = true)
+            word.mainTranslation.contains(query, ignoreCase = true) ||
+            word.additionalTranslations.any { it.contains(query, ignoreCase = true) }
         }
     }
 
