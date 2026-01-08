@@ -314,7 +314,7 @@ private fun WordSearchResult(
                 if (word.additionalTranslations.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(8.dp))
                     HighlightedText(
-                        text = "Also: ${word.additionalTranslations.joinToString(", ")}",
+                        text = word.additionalTranslations.joinToString(", "),
                         query = query,
                         style = MaterialTheme.typography.bodyMedium,
                         normalColor = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)

@@ -305,7 +305,7 @@ private fun FlashCard(
                 if (additionalTranslations.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "Also: ${additionalTranslations.joinToString(", ")}",
+                        text = additionalTranslations.joinToString(", "),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.6f),
                         textAlign = TextAlign.Center
