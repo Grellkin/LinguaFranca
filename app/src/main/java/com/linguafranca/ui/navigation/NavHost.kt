@@ -28,6 +28,7 @@ import com.linguafranca.ui.screens.search.SearchScreen
 import com.linguafranca.ui.screens.settings.SettingsScreen
 import com.linguafranca.ui.screens.word.CreateWordScreen
 import com.linguafranca.ui.screens.word.WordDetailScreen
+import com.linguafranca.domain.model.LearningSessionType
 
 @Composable
 fun LinguaFrancaNavHost(
@@ -114,13 +115,28 @@ fun LinguaFrancaNavHost(
         
         composable(Screen.Learning.route) {
             LearningScreen(
-                onStartSession = { navController.navigate(Screen.LearningSession.route) },
+                onStartSession = { sessionType ->
+                    navController.navigate(Screen.LearningSession.createRoute(sessionType))
+                },
                 onNavigateBack = { navController.popBackStack() }
             )
         }
         
-        composable(Screen.LearningSession.route) {
+        composable(
+            route = Screen.LearningSession.route,
+            arguments = listOf(
+                navArgument("sessionType") { 
+                    type = NavType.StringType
+                    defaultValue = LearningSessionType.FLASH_CARDS.name
+                }
+            )
+        ) { backStackEntry ->
+            val sessionType = LearningSessionType.valueOf(
+                backStackEntry.arguments?.getString("sessionType") 
+                    ?: LearningSessionType.FLASH_CARDS.name
+            )
             LearningSessionScreen(
+                sessionType = sessionType,
                 onSessionComplete = { correct, total ->
                     navController.navigate(Screen.LearningResult.createRoute(correct, total)) {
                         popUpTo(Screen.Learning.route)
@@ -143,7 +159,7 @@ fun LinguaFrancaNavHost(
                 correctCount = correctCount,
                 totalCount = totalCount,
                 onContinueLearning = {
-                    navController.navigate(Screen.LearningSession.route) {
+                    navController.navigate(Screen.LearningSession.createRoute(LearningSessionType.FLASH_CARDS)) {
                         popUpTo(Screen.Learning.route)
                     }
                 },

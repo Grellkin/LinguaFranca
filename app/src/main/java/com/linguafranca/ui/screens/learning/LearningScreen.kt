@@ -13,15 +13,19 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.Keyboard
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.School
+import androidx.compose.material.icons.filled.Style
+import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -32,30 +36,50 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.linguafranca.domain.model.DictionaryType
 import com.linguafranca.domain.model.DictionaryWithProgress
+import com.linguafranca.domain.model.LearningSessionType
 import com.linguafranca.ui.theme.LinguaFrancaColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LearningScreen(
-    onStartSession: () -> Unit,
+    onStartSession: (LearningSessionType) -> Unit,
     onNavigateBack: () -> Unit,
     viewModel: LearningViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    var showSessionTypePicker by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState()
+
+    if (showSessionTypePicker) {
+        SessionTypeSelectorSheet(
+            sheetState = sheetState,
+            onDismiss = { showSessionTypePicker = false },
+            onSelectType = { sessionType ->
+                showSessionTypePicker = false
+                onStartSession(sessionType)
+            }
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -90,7 +114,7 @@ fun LearningScreen(
                 item {
                     StartSessionCard(
                         wordsToReview = uiState.wordsToReview,
-                        onStartSession = onStartSession
+                        onStartSession = { showSessionTypePicker = true }
                     )
                 }
 
@@ -123,6 +147,133 @@ fun LearningScreen(
                     }
                 }
             }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SessionTypeSelectorSheet(
+    sheetState: androidx.compose.material3.SheetState,
+    onDismiss: () -> Unit,
+    onSelectType: (LearningSessionType) -> Unit
+) {
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = sheetState,
+        shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp)
+                .padding(bottom = 32.dp)
+        ) {
+            Text(
+                text = "Choose Learning Mode",
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold
+            )
+            
+            Spacer(modifier = Modifier.height(8.dp))
+            
+            Text(
+                text = "Select how you want to practice your vocabulary",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            
+            Spacer(modifier = Modifier.height(24.dp))
+            
+            SessionTypeCard(
+                icon = Icons.Default.Style,
+                title = "Flash Cards",
+                description = "Review words and reveal translations",
+                color = LinguaFrancaColors.ParrotGreen,
+                onClick = { onSelectType(LearningSessionType.FLASH_CARDS) }
+            )
+            
+            Spacer(modifier = Modifier.height(12.dp))
+            
+            SessionTypeCard(
+                icon = Icons.Default.Keyboard,
+                title = "Write the Word",
+                description = "See translation, type the word",
+                color = LinguaFrancaColors.TropicalBlue,
+                onClick = { onSelectType(LearningSessionType.WRITE_WORD) }
+            )
+            
+            Spacer(modifier = Modifier.height(12.dp))
+            
+            SessionTypeCard(
+                icon = Icons.Default.Translate,
+                title = "Write the Translation",
+                description = "See the word, type translation",
+                color = LinguaFrancaColors.TropicalOrange,
+                onClick = { onSelectType(LearningSessionType.WRITE_TRANSLATION) }
+            )
+        }
+    }
+}
+
+@Composable
+private fun SessionTypeCard(
+    icon: ImageVector,
+    title: String,
+    description: String,
+    color: androidx.compose.ui.graphics.Color,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
+        colors = CardDefaults.cardColors(
+            containerColor = color.copy(alpha = 0.1f)
+        ),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(CircleShape)
+                    .background(color.copy(alpha = 0.2f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = color,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+            
+            Spacer(modifier = Modifier.width(16.dp))
+            
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Text(
+                    text = description,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            
+            Icon(
+                imageVector = Icons.Default.ChevronRight,
+                contentDescription = null,
+                tint = color
+            )
         }
     }
 }
@@ -317,4 +468,3 @@ private fun EmptyDictionariesCard() {
         }
     }
 }
-

@@ -1,5 +1,7 @@
 package com.linguafranca.ui.navigation
 
+import com.linguafranca.domain.model.LearningSessionType
+
 sealed class Screen(val route: String) {
     // Auth flow
     data object Welcome : Screen("welcome")
@@ -33,7 +35,9 @@ sealed class Screen(val route: String) {
     }
     
     // Learning screens
-    data object LearningSession : Screen("learning/session")
+    data object LearningSession : Screen("learning/session/{sessionType}") {
+        fun createRoute(sessionType: LearningSessionType) = "learning/session/${sessionType.name}"
+    }
     data object LearningResult : Screen("learning/result/{correctCount}/{totalCount}") {
         fun createRoute(correctCount: Int, totalCount: Int) = "learning/result/$correctCount/$totalCount"
     }
